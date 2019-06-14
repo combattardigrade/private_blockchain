@@ -46,7 +46,7 @@ class Block {
             // Comparing if the hashes changed
             // Returning the Block is not valid
             SHA256(JSON.stringify(self)).toString() === currentHash
-                ? reject(false)
+                ? resolve(false)
                 // Returning the Block is valid
                 : resolve(true)
         });
