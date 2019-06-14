@@ -42,13 +42,14 @@ class Block {
             let currentHash = self.hash
             // Set hash property of the block to null
             self.hash = null            
-            // Recalculate the hash of the Block           
-            // Comparing if the hashes changed
-            // Returning the Block is not valid
-            SHA256(JSON.stringify(self)).toString() === currentHash
-                ? resolve(false)
+            // Recalculate the hash of the Block
+            self.hash = SHA256(JSON.stringify(self)).toString()
+            // Comparing if the hashes changed            
+            self.hash === currentHash
                 // Returning the Block is valid
-                : resolve(true)
+                ? resolve(true)     
+                // Returning the Block is not valid           
+                : resolve(false)
         });
     }
 
