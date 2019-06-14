@@ -68,7 +68,7 @@ class Blockchain {
                block.previousBlockHash = self.chain[self.chain.length - 1].hash
            }
            block.height = self.chain.length
-           block.timestamp = new Date().getTime().toString().slice(0,-3)
+           block.time = new Date().getTime().toString().slice(0,-3)
            block.hash = SHA256(JSON.stringify(block)).toString()
            self.chain.push(block)
            resolve(block)
@@ -192,20 +192,25 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            let previousBlockHash = self.chain[0].hash 
-            self.chain.forEach(block => { 
-                if(block.height == 0) return 
-                if(block.previousBlockHash === previousBlockHash) {
-                    block.validate()
-                        ? resolve('valid')
-                        : errorLog.push('Incorrect hash in block ' + block.height); reject(errorLog);
+            
+            for(let i = 1; i < self.chain.length; i++) {
+                let block = self.chain[i]
+                if(block.validate()) {
+                    let previousBlockHash = self.chain[i-1].hash
+                    if(previousBlockHash === block.previousBlockHash) {
+                        continue
+                    } else {
+                        errorLog.push(previousBlockHash)
+                    }
                 } else {
-                    errorLog.push('Incorrect previousBlockHash')
-                    reject(errorLog)
-                }                
-                previousBlockHash = block.hash                
-            })
-        });
+                    errorLog.push(block.height)
+                }
+            }
+            
+            errorLog.length === 0 
+                ? resolve('Blockchain is valid')  
+                : resolve(errorLog)
+        })
     }
 
 }
